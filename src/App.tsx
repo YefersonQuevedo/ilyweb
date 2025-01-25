@@ -3,15 +3,33 @@ import { MagnifyingGlassIcon, HomeIcon, UserCircleIcon, PlusIcon, MinusIcon } fr
 import { Header } from './components/Header';
 import { Menu } from './components/Menu';
 import { Categories } from './components/Categories';
-import { categories, products } from './data';
+import { categories, getProducts } from './data';
 import { CartItem, Product } from './types';
 
 function App() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
   const [cart, setCart] = useState<CartItem[]>([
     { id: 1, name: 'Gabinete Grande', quantity: 1.00, price: 368.00, units: 'Unidades' },
     { id: 2, name: 'Caja de Almacenamiento', quantity: 1.00, price: 18.17, units: 'Unidades' },
     { id: 3, name: 'Bandeja de Cartas', quantity: 1.00, price: 5.52, units: 'Unidades' },
   ]);
+
+  // Cargar productos al montar el componente
+  React.useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        const productsData = await getProducts();
+        setProducts(productsData);
+      } catch (error) {
+        console.error('Error cargando productos:', error);
+      } finally {
+        setIsLoadingProducts(false);
+      }
+    };
+    
+    loadProducts();
+  }, []);
   const [selectedCustomer] = useState('Anita Oliver');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);

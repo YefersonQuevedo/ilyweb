@@ -23,13 +23,26 @@ export const categories: Category[] = [
   },
 ];
 
-export const products: Product[] = [
-  { id: 1, name: 'Escritorio Esquina Izquierda', price: 97.75, image: 'https://placehold.co/200x150', categoryId: 1 },
-  { id: 2, name: 'Escritorio Esquina Derecha', price: 169.05, image: 'https://placehold.co/200x150', categoryId: 1 },
-  { id: 3, name: 'Escritorio Personalizable', price: 920.46, image: 'https://placehold.co/200x150', categoryId: 1 },
-  { id: 4, name: 'Escritorio para 4 Personas', price: 2702.50, image: 'https://placehold.co/200x150', categoryId: 1 },
-  { id: 5, name: 'Silla Ejecutiva', price: 368.00, image: 'https://placehold.co/200x150', categoryId: 2 },
-  { id: 6, name: 'Silla de Visita', price: 185.50, image: 'https://placehold.co/200x150', categoryId: 2 },
-  { id: 7, name: 'Archivero', price: 517.50, image: 'https://placehold.co/200x150', categoryId: 3 },
-  { id: 8, name: 'Lámpara de Escritorio', price: 89.99, image: 'https://placehold.co/200x150', categoryId: 4 },
-];
+export const getProducts = async (): Promise<Product[]> => {
+  try {
+    const response = await fetch('http://localhost:5000/api/products');
+    if (!response.ok) {
+      throw new Error('Error al obtener los productos');
+    }
+    
+    const data = await response.json();
+    
+    // Mapear los datos de la API al formato esperado
+    return data.map((product: any) => ({
+      id: product.ID,
+      name: product.nombre,
+      price: parseFloat(product.precio),
+      image: product.imagen || 'https://placehold.co/200x150',
+      categoryId: product.categoria_id || 1
+    }));
+    
+  } catch (error) {
+    console.error('Error:', error);
+    return [];
+  }
+};
